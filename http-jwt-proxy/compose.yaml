@@ -1,0 +1,28 @@
+services:
+  proxy:
+    build: .
+    ports:
+      - "80:3000"
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      UPSTREAM_HOST: legacy
+      UPSTREAM_PORT: "8081"
+    depends_on:
+      - legacy
+    networks:
+      - public_side
+      - private_side
+
+  legacy:
+    image: ghcr.io/mccutchen/go-httpbin:v2.25.0
+    environment:
+      PORT: "8081"
+    expose:
+      - "8081"
+    networks:
+      - private_side
+
+networks:
+  public_side:
+  private_side:
+    internal: true
